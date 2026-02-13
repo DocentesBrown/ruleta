@@ -2,180 +2,185 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruleta Promocional - Calificadores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Promo Ruleta - Docentes Brown</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=IBM+Plex+Sans+Hebrew:wght@400;600&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --color-crema: #F3EFDC;
-            --color-azul: #24496E;
-        }
-        body { 
-            font-family: 'IBM Plex Sans Hebrew', sans-serif; 
-            background-color: var(--color-crema);
-            color: var(--color-azul);
-        }
-        h1, h2, #btn-girar { 
-            font-family: 'League Spartan', sans-serif; 
-            text-transform: uppercase;
-        }
-        .ruleta-container { position: relative; width: 340px; height: 340px; margin: 0 auto; }
-        #canvas-ruleta { 
-            width: 100%; height: 100%; 
-            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
-        }
-        .puntero {
-            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0; border-left: 15px solid transparent;
-            border-right: 15px solid transparent; border-top: 30px solid var(--color-azul); z-index: 10;
-        }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(36, 73, 110, 0.9); z-index: 50; align-items: center; justify-content: center; padding: 20px; }
+        :root { --color-crema: #F3EFDC; --color-azul: #24496E; }
+        body { font-family: 'IBM Plex Sans Hebrew', sans-serif; background-color: var(--color-crema); color: var(--color-azul); overflow-x: hidden; touch-action: manipulation; }
+        h1, h2, h3, #btn-girar { font-family: 'League Spartan', sans-serif; text-transform: uppercase; }
+        .ruleta-wrapper { position: relative; width: 90vw; max-width: 360px; aspect-ratio: 1 / 1; margin: 0 auto; }
+        #canvas-ruleta { width: 100% !important; height: 100% !important; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); border-radius: 50%; }
+        .puntero { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid var(--color-azul); z-index: 20; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(36, 73, 110, 0.95); z-index: 100; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(5px); }
+        .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 200; padding: 20px; overflow-y: auto; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-start min-h-screen pt-10 pb-6 px-4">
 
-    <header class="text-center mb-6">
-        <h1 class="text-4xl font-bold mb-2">Girás la ruleta y ganás tu promo</h1>
-        <p class="text-lg opacity-90">¡No te quedes sin tu beneficio!</p>
+    <header class="text-center mb-6 max-w-xs">
+        <h1 id="titulo-app" class="text-3xl leading-none font-bold mb-2 tracking-tight cursor-pointer">Girás la ruleta y ganás tu promo</h1>
+        <p class="text-sm font-medium opacity-80 uppercase tracking-widest">Docentes Brown</p>
     </header>
 
-    <main class="bg-white/50 backdrop-blur-sm p-8 rounded-[2rem] shadow-2xl w-full max-w-sm text-center border border-white/20">
-        <div class="ruleta-container mb-6">
+    <main class="w-full max-w-sm">
+        <div class="ruleta-wrapper mb-8">
             <div class="puntero"></div>
-            <canvas id="canvas-ruleta" width="500" height="500"></canvas>
+            <canvas id="canvas-ruleta" width="800" height="800"></canvas>
         </div>
 
-        <button id="btn-girar" class="bg-[#24496E] hover:bg-[#1a3550] text-[#F3EFDC] font-bold py-4 px-8 rounded-xl text-2xl shadow-lg transform transition active:scale-95 w-full tracking-wider">
-            ¡GIRAR!
+        <button id="btn-girar" class="w-full bg-[#24496E] text-[#F3EFDC] font-bold py-5 px-4 rounded-2xl text-xl shadow-xl active:scale-95 transition-all">
+            ¡GIRAR AHORA!
         </button>
 
-        <div class="mt-6 text-left text-[11px] space-y-1 opacity-80 border-t border-[#24496E]/20 pt-4">
-            <p><strong>* Combo Especial:</strong> 50% OFF comprando Calificador Físico + Digital.</p>
-            <p><strong>* Combo Docente:</strong> 10% OFF en Calificador con Calendario y Planner.</p>
-            <p><strong>* Digital Gratis:</strong> Con la compra de cualquier calificador físico.</p>
+        <div class="mt-8 space-y-2 px-2">
+            <h3 class="text-xs font-bold border-b border-[#24496E]/20 pb-1">Aclaraciones:</h3>
+            <div class="text-[10px] leading-relaxed opacity-70">
+                <p><strong>* Combos:</strong> Descuentos válidos en la compra de Calificador Físico + Digital.</p>
+                <p><strong>* Tirar de nuevo:</strong> No cuenta como premio, ¡podés volver a intentar!</p>
+            </div>
         </div>
-
-        <p id="msg-error" class="text-red-600 mt-4 hidden text-sm font-bold uppercase">Ya participaste con este dispositivo.</p>
+        <p id="msg-error" class="text-red-600 mt-4 hidden text-center text-xs font-bold">YA USASTE TU OPORTUNIDAD.</p>
     </main>
 
     <div id="modal-ganador" class="modal-overlay">
-        <div class="bg-[#F3EFDC] rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl border-4 border-[#24496E]">
-            <h2 class="text-3xl font-bold text-[#24496E] mb-2 italic">¡GANASTE!</h2>
-            <div id="premio-texto" class="text-xl font-bold text-[#F3EFDC] bg-[#24496E] p-4 rounded-xl mb-6 shadow-inner"></div>
-            
-            <p class="text-sm text-[#24496E] mb-6 font-semibold">Mandanos una captura de pantalla por Instagram o por WhatsApp y te enviamos la tienda y el cupón para que hagas tu compra.</p>
-            
-            <div class="space-y-3">
-                <a id="btn-whatsapp" href="#" target="_blank" class="block bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-md">Enviar por WhatsApp</a>
-                <a id="btn-instagram" href="https://instagram.com/docentesbrown" target="_blank" class="block bg-[#24496E] text-[#F3EFDC] py-3 rounded-xl font-bold hover:opacity-90 transition shadow-md">Enviar por Instagram</a>
+        <div class="bg-[#F3EFDC] rounded-[2.5rem] p-8 w-full max-w-[320px] text-center shadow-2xl border-[6px] border-[#24496E]">
+            <h2 id="modal-titulo" class="text-4xl font-bold text-[#24496E] mb-2">¡GENIAL!</h2>
+            <div id="premio-texto" class="text-xl font-bold text-[#F3EFDC] bg-[#24496E] p-5 rounded-2xl mb-6 min-h-[80px] flex items-center justify-center"></div>
+            <div id="instrucciones-ganador">
+                <p class="text-[11px] leading-tight text-[#24496E] mb-6 font-semibold">Capturá esta pantalla y enviala por Instagram o WhatsApp.</p>
+                <div class="space-y-3">
+                    <a id="btn-whatsapp" href="#" class="flex items-center justify-center bg-[#25D366] text-white py-4 rounded-xl font-bold text-sm">WhatsApp</a>
+                    <a href="https://instagram.com/docentesbrown" class="flex items-center justify-center bg-[#24496E] text-[#F3EFDC] py-4 rounded-xl font-bold text-sm">Instagram</a>
+                </div>
             </div>
+            <button id="btn-cerrar-modal" class="hidden mt-4 text-[#24496E] font-bold underline">Cerrar y reintentar</button>
         </div>
     </div>
 
+    <div id="panel-admin" class="admin-panel">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold">Panel de Control</h2>
+            <button onclick="cerrarAdmin()" class="text-red-500 font-bold">CERRAR</button>
+        </div>
+        <button onclick="resetStorage()" class="w-full bg-red-100 text-red-600 p-4 rounded-xl font-bold mb-4">RESETAR DISPOSITIVO (Volver a tirar)</button>
+        <p class="text-xs text-gray-500 mb-4 italic text-center">Nota: Para editar premios permanentemente, debes modificar el arreglo "PREMIOS" en el código fuente.</p>
+    </div>
+
     <script>
-        // CONFIGURACIÓN DE PREMIOS (Abreviados para la ruleta)
-        const PREMIOS = [
-            { corto: "5% OFF", completo: "5% de descuento", color: "#F3EFDC", textoColor: "#24496E", peso: 35 },
-            { corto: "10% OFF", completo: "10% de descuento", color: "#24496E", textoColor: "#F3EFDC", peso: 25 },
-            { corto: "DIGITAL GRATIS*", completo: "Calificador Digital Gratis (con compra de físico)", color: "#F3EFDC", textoColor: "#24496E", peso: 20 },
-            { corto: "10% COMBO*", completo: "10% de descuento comprando el calificador con calendario y planner", color: "#24496E", textoColor: "#F3EFDC", peso: 12 },
-            { corto: "25% OFF", completo: "25% de descuento", color: "#F3EFDC", textoColor: "#24496E", peso: 5 },
-            { corto: "50% COMBO*", completo: "50% de descuento comprando el calificador físico + el calificador digital", color: "#24496E", textoColor: "#F3EFDC", peso: 3 }
+        // GENERACIÓN DINÁMICA DE SEGMENTOS SEGÚN TU PEDIDO
+        const TIPOS_PREMIO = [
+            { corto: "10% OFF", completo: "10% de descuento", cant: 10 },
+            { corto: "15% OFF", completo: "15% de descuento", cant: 5 },
+            { corto: "20% OFF", completo: "20% de descuento", cant: 2 },
+            { corto: "25% OFF", completo: "25% de descuento", cant: 1 },
+            { corto: "40% COMBO*", completo: "40% OFF en Calificador Físico + Digital", cant: 1 },
+            { corto: "50% COMBO*", completo: "50% OFF en Calificador Físico + Digital", cant: 1 },
+            { corto: "OTRA VEZ", completo: "TIRAR DE NUEVO", cant: 5, reintentar: true }
         ];
+
+        const PREMIOS = [];
+        TIPOS_PREMIO.forEach(tipo => {
+            for(let i=0; i<tipo.cant; i++) {
+                PREMIOS.push({ ...tipo, color: PREMIOS.length % 2 === 0 ? "#F3EFDC" : "#24496E", txt: PREMIOS.length % 2 === 0 ? "#24496E" : "#F3EFDC" });
+            }
+        });
 
         const canvas = document.getElementById('canvas-ruleta');
         const ctx = canvas.getContext('2d');
         const btnGirar = document.getElementById('btn-girar');
         const modal = document.getElementById('modal-ganador');
-        const premioTexto = document.getElementById('premio-texto');
-        
+        const tituloApp = document.getElementById('titulo-app');
         let girando = false;
 
-        function dibujarRuleta() {
-            const radio = canvas.width / 2;
-            const anguloSegmento = (2 * Math.PI) / PREMIOS.length;
-
-            PREMIOS.forEach((premio, i) => {
-                ctx.beginPath();
-                ctx.fillStyle = premio.color;
-                ctx.moveTo(radio, radio);
-                ctx.arc(radio, radio, radio, i * anguloSegmento, (i + 1) * anguloSegmento);
+        function dibujar() {
+            const r = canvas.width / 2;
+            const arc = (2 * Math.PI) / PREMIOS.length;
+            PREMIOS.forEach((p, i) => {
+                const angulo = i * arc;
+                ctx.fillStyle = p.color;
+                ctx.beginPath(); ctx.moveTo(r, r);
+                ctx.arc(r, r, r, angulo, angulo + arc);
                 ctx.fill();
-                
-                // Bordes de los segmentos
-                ctx.strokeStyle = "#24496E";
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
+                ctx.strokeStyle = "#24496E"; ctx.lineWidth = 1; ctx.stroke();
                 ctx.save();
-                ctx.translate(radio, radio);
-                ctx.rotate(i * anguloSegmento + anguloSegmento / 2);
-                ctx.textAlign = "right";
-                ctx.fillStyle = premio.textoColor;
-                ctx.font = "bold 20px 'League Spartan'";
-                ctx.fillText(premio.corto, radio - 20, 10);
-                ctx.restore();
+                ctx.translate(r, r); ctx.rotate(angulo + arc / 2);
+                ctx.textAlign = "right"; ctx.fillStyle = p.txt;
+                ctx.font = "bold 16px 'League Spartan'";
+                ctx.fillText(p.corto, r - 40, 6); ctx.restore();
             });
-        }
-
-        function obtenerPremioAleatorio() {
-            const totalPeso = PREMIOS.reduce((acc, p) => acc + p.peso, 0);
-            let random = Math.random() * totalPeso;
-            for (let i = 0; i < PREMIOS.length; i++) {
-                if (random < PREMIOS[i].peso) return i;
-                random -= PREMIOS[i].peso;
-            }
         }
 
         function girar() {
-            if (girando || localStorage.getItem('promo_calificadores_2024')) return;
-            
+            if (girando || localStorage.getItem('dbrown_promo_2024')) return;
             girando = true;
             btnGirar.disabled = true;
-            btnGirar.classList.add('opacity-50');
+            btnGirar.style.opacity = "0.5";
 
-            const indicePremio = obtenerPremioAleatorio();
-            const gradosPorSegmento = 360 / PREMIOS.length;
-            const vueltasBase = 8; 
-            const ajusteFinal = 360 - (indicePremio * gradosPorSegmento) - (gradosPorSegmento / 2);
-            const rotacionTotal = (vueltasBase * 360) + ajusteFinal;
-
-            canvas.style.transform = `rotate(${rotacionTotal}deg)`;
+            const index = Math.floor(Math.random() * PREMIOS.length);
+            const vueltas = 360 * 8;
+            const gradoFinal = 360 - (index * (360/PREMIOS.length)) - (360/PREMIOS.length/2);
+            canvas.style.transform = `rotate(${vueltas + gradoFinal}deg)`;
 
             setTimeout(() => {
-                const premio = PREMIOS[indicePremio];
-                mostrarResultado(premio.completo);
-                localStorage.setItem('promo_calificadores_2024', premio.completo);
-            }, 4100);
+                const premio = PREMIOS[index];
+                if (!premio.reintentar) {
+                    localStorage.setItem('dbrown_promo_2024', premio.completo);
+                }
+                mostrarPremio(premio);
+            }, 4000);
         }
 
-        function mostrarResultado(texto) {
-            confetti({ 
-                particleCount: 100, 
-                spread: 70, 
-                origin: { y: 0.6 },
-                colors: ['#24496E', '#F3EFDC', '#ffffff']
-            });
-            premioTexto.innerText = texto;
+        function mostrarPremio(p) {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 }, colors: ['#24496E', '#F3EFDC'] });
+            document.getElementById('premio-texto').innerText = p.completo;
             
-            const msjWs = encodeURIComponent(`¡Hola! Gané esta promo en la ruleta: ${texto}. Les envío la captura.`);
-            document.getElementById('btn-whatsapp').href = `https://wa.me/5491153196358?text=${msjWs}`; // <-- REEMPLAZAR CON TU NÚMERO
-            
+            if (p.reintentar) {
+                document.getElementById('modal-titulo').innerText = "¡UPS!";
+                document.getElementById('instrucciones-ganador').classList.add('hidden');
+                document.getElementById('btn-cerrar-modal').classList.remove('hidden');
+                girando = false;
+            } else {
+                document.getElementById('modal-titulo').innerText = "¡GANASTE!";
+                document.getElementById('instrucciones-ganador').classList.remove('hidden');
+                document.getElementById('btn-cerrar-modal').classList.add('hidden');
+                const link = `https://wa.me/5491153196358?text=${encodeURIComponent('¡Hola Docentes Brown! Gané '+p.completo+' en la ruleta.')}`;
+                document.getElementById('btn-whatsapp').href = link;
+            }
             modal.style.display = 'flex';
         }
 
+        // Lógica de Admin (Triple Clic en Título)
+        let clics = 0;
+        tituloApp.addEventListener('click', () => {
+            clics++;
+            if (clics === 3) { document.getElementById('panel-admin').style.display = 'block'; clics = 0; }
+            setTimeout(() => clics = 0, 1000);
+        });
+
+        function cerrarAdmin() { document.getElementById('panel-admin').style.display = 'none'; }
+        function resetStorage() { localStorage.removeItem('dbrown_promo_2024'); location.reload(); }
+        
+        document.getElementById('btn-cerrar-modal').onclick = () => {
+            modal.style.display = 'none';
+            btnGirar.disabled = false;
+            btnGirar.style.opacity = "1";
+            canvas.style.transition = "none";
+            canvas.style.transform = "rotate(0deg)";
+            setTimeout(() => canvas.style.transition = "transform 4s cubic-bezier(0.15, 0, 0.15, 1)", 50);
+        };
+
         window.onload = () => {
-            dibujarRuleta();
-            const premioGuardado = localStorage.getItem('promo_calificadores_2024');
-            if (premioGuardado) {
+            dibujar();
+            const yaGano = localStorage.getItem('dbrown_promo_2024');
+            if (yaGano) {
                 btnGirar.innerText = "YA PARTICIPASTE";
                 btnGirar.disabled = true;
                 document.getElementById('msg-error').classList.remove('hidden');
-                setTimeout(() => mostrarResultado(premioGuardado), 800);
+                mostrarPremio({ completo: yaGano, reintentar: false });
             }
         };
 
