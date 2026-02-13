@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleta de Premios - Calificadores Docentes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Quicksand', sans-serif; background-color: #f3f4f6; }
+        .ruleta-container { position: relative; width: 320px; height: 320px; margin: 0 auto; }
+        #canvas-ruleta { width: 100%; height: 100%; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
+        .puntero {
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 15px solid transparent;
+            border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10;
+        }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; align-items: center; justify-content: center; padding: 20px; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 text-gray-800">
+
+    <header class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-indigo-600 mb-2">¡Girás y Ganás!</h1>
+        <p class="text-gray-600">Probá tu suerte y llevate una promo para tu próximo calificador.</p>
+    </header>
+
+    <main class="bg-white p-6 rounded-3xl shadow-xl w-full max-w-sm text-center">
+        <div class="ruleta-container mb-6">
+            <div class="puntero"></div>
+            <canvas id="canvas-ruleta" width="400" height="400"></canvas>
+        </div>
+
+        <button id="btn-girar" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-8 rounded-full text-xl shadow-lg transform transition active:scale-95 w-full">
+            ¡GIRAR AHORA!
+        </button>
+        <p id="msg-error" class="text-red-500 mt-4 hidden text-sm font-semibold">Ya usaste tu oportunidad por hoy. ¡Mirá tu premio abajo!</p>
+    </main>
+
+    <div id="modal-ganador" class="modal-overlay">
+        <div class="bg-white rounded-2xl p-8 max-w-xs w-full text-center shadow-2xl">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">¡FELICITACIONES! 🥳</h2>
+            <p class="text-lg mb-2 text-gray-600">Ganaste:</p>
+            <div id="premio-texto" class="text-xl font-extrabold text-indigo-600 bg-indigo-50 p-4 rounded-xl mb-6 leading-tight"></div>
+            <p class="text-sm text-gray-500 mb-6 italic">Mandanos una captura de pantalla por Instagram o WhatsApp para recibir tu cupón.</p>
+            
+            <div class="space-y-3">
+                <a id="btn-whatsapp" href="#" target="_blank" class="block bg-green-500 text-white py-3 rounded-lg font-bold hover:bg-green-600 transition">Enviar por WhatsApp</a>
+                <a id="btn-instagram" href="https://instagram.com/TU_USUARIO" target="_blank" class="block bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-lg font-bold hover:opacity-90 transition">Enviar por Instagram</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURACIÓN DE PREMIOS Y PROBABILIDADES
+        const PREMIOS = [
+            { texto: "5% de descuento", color: "#C7D2FE", peso: 35 },
+            { texto: "10% de descuento", color: "#A5B4FC", peso: 25 },
+            { texto: "Calificador Digital GRATIS", color: "#818CF8", peso: 20 },
+            { texto: "10% OFF Combo Planner", color: "#6366F1", peso: 12 },
+            { texto: "25% de descuento", color: "#4F46E5", peso: 5 },
+            { texto: "50% OFF Combo Especial", color: "#3730A3", peso: 3 }
+        ];
+
+        const canvas = document.getElementById('canvas-ruleta');
+        const ctx = canvas.getContext('2d');
+        const btnGirar = document.getElementById('btn-girar');
+        const modal = document.getElementById('modal-ganador');
+        const premioTexto = document.getElementById('premio-texto');
+        
+        let girando = false;
+
+        // Dibujar la ruleta
+        function dibujarRuleta() {
+            const radio = canvas.width / 2;
+            const anguloSegmento = (2 * Math.PI) / PREMIOS.length;
+
+            PREMIOS.forEach((premio, i) => {
+                ctx.beginPath();
+                ctx.fillStyle = premio.color;
+                ctx.moveTo(radio, radio);
+                ctx.arc(radio, radio, radio, i * anguloSegmento, (i + 1) * anguloSegmento);
+                ctx.fill();
+                ctx.save();
+                
+                // Texto de los segmentos
+                ctx.translate(radio, radio);
+                ctx.rotate(i * anguloSegmento + anguloSegmento / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#fff";
+                ctx.font = "bold 14px Montserrat";
+                ctx.fillText(premio.texto.substring(0, 15), radio - 10, 5);
+                ctx.restore();
+            });
+        }
+
+        // Lógica de sorteo por peso
+        function obtenerPremioAleatorio() {
+            const totalPeso = PREMIOS.reduce((acc, p) => acc + p.peso, 0);
+            let random = Math.random() * totalPeso;
+            for (let i = 0; i < PREMIOS.length; i++) {
+                if (random < PREMIOS[i].peso) return i;
+                random -= PREMIOS[i].peso;
+            }
+        }
+
+        function girar() {
+            if (girando || localStorage.getItem('ruleta_docente_ganada')) return;
+            
+            girando = true;
+            btnGirar.disabled = true;
+            btnGirar.classList.add('opacity-50');
+
+            const indicePremio = obtenerPremioAleatorio();
+            const gradosPorSegmento = 360 / PREMIOS.length;
+            const vueltasBase = 5; // Cantidad de giros completos
+            const ajusteFinal = 360 - (indicePremio * gradosPorSegmento) - (gradosPorSegmento / 2);
+            const rotacionTotal = (vueltasBase * 360) + ajusteFinal;
+
+            canvas.style.transform = `rotate(${rotacionTotal}deg)`;
+
+            setTimeout(() => {
+                const premio = PREMIOS[indicePremio];
+                mostrarResultado(premio.texto);
+                localStorage.setItem('ruleta_docente_ganada', premio.texto);
+            }, 4100);
+        }
+
+        function mostrarResultado(texto) {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            premioTexto.innerText = texto;
+            
+            // Configurar Link WhatsApp
+            const msjWs = encodeURIComponent(`¡Hola! Gané esta promo en la ruleta: ${texto}. Les envío la captura.`);
+            document.getElementById('btn-whatsapp').href = `https://wa.me/5491100000000?text=${msjWs}`; // CAMBIAR TU NUMERO ACA
+            
+            modal.style.display = 'flex';
+        }
+
+        // Bloqueo si ya participó
+        window.onload = () => {
+            dibujarRuleta();
+            const premioGuardado = localStorage.getItem('ruleta_docente_ganada');
+            if (premioGuardado) {
+                btnGirar.disabled = true;
+                btnGirar.classList.add('hidden');
+                document.getElementById('msg-error').classList.remove('hidden');
+                setTimeout(() => mostrarResultado(premioGuardado), 500);
+            }
+        };
+
+        btnGirar.addEventListener('click', girar);
+    </script>
+</body>
+</html>
