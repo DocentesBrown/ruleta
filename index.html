@@ -17,6 +17,15 @@
         .puntero { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid var(--color-azul); z-index: 20; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(36, 73, 110, 0.95); z-index: 100; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(5px); }
         .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 200; padding: 20px; overflow-y: auto; }
+        
+        /* Estilo para la X de cierre */
+        .btn-close-modal {
+            position: absolute; top: 20px; right: 20px;
+            width: 35px; height: 35px;
+            background: var(--color-azul); color: var(--color-crema);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: bold; cursor: pointer; border: 2px solid var(--color-crema);
+        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-start min-h-screen pt-10 pb-6 px-4">
@@ -43,35 +52,39 @@
                 <p><strong>* Tirar de nuevo:</strong> No cuenta como premio, ¡podés volver a intentar!</p>
             </div>
         </div>
-        <p id="msg-error" class="text-red-600 mt-4 hidden text-center text-xs font-bold">YA USASTE TU OPORTUNIDAD.</p>
+        <p id="msg-error" class="text-red-600 mt-4 hidden text-center text-xs font-bold uppercase tracking-widest">Ya usaste tu oportunidad.</p>
     </main>
 
     <div id="modal-ganador" class="modal-overlay">
-        <div class="bg-[#F3EFDC] rounded-[2.5rem] p-8 w-full max-w-[320px] text-center shadow-2xl border-[6px] border-[#24496E]">
+        <div class="relative bg-[#F3EFDC] rounded-[2.5rem] p-8 w-full max-w-[320px] text-center shadow-2xl border-[6px] border-[#24496E]">
+            
+            <div id="x-cerrar" class="btn-close-modal">×</div>
+
             <h2 id="modal-titulo" class="text-4xl font-bold text-[#24496E] mb-2">¡GENIAL!</h2>
             <div id="premio-texto" class="text-xl font-bold text-[#F3EFDC] bg-[#24496E] p-5 rounded-2xl mb-6 min-h-[80px] flex items-center justify-center"></div>
+            
             <div id="instrucciones-ganador">
-                <p class="text-[11px] leading-tight text-[#24496E] mb-6 font-semibold">Capturá esta pantalla y enviala por Instagram o WhatsApp.</p>
+                <p class="text-[11px] leading-tight text-[#24496E] mb-6 font-semibold uppercase">Capturá esta pantalla y enviala por Instagram o WhatsApp.</p>
                 <div class="space-y-3">
-                    <a id="btn-whatsapp" href="#" class="flex items-center justify-center bg-[#25D366] text-white py-4 rounded-xl font-bold text-sm">WhatsApp</a>
-                    <a href="https://instagram.com/docentesbrown" class="flex items-center justify-center bg-[#24496E] text-[#F3EFDC] py-4 rounded-xl font-bold text-sm">Instagram</a>
+                    <a id="btn-whatsapp" href="#" class="flex items-center justify-center bg-[#25D366] text-white py-4 rounded-xl font-bold text-sm shadow-md">WhatsApp</a>
+                    <a href="https://instagram.com/docentesbrown" class="flex items-center justify-center bg-[#24496E] text-[#F3EFDC] py-4 rounded-xl font-bold text-sm shadow-md">Instagram</a>
                 </div>
             </div>
-            <button id="btn-cerrar-modal" class="hidden mt-4 text-[#24496E] font-bold underline">Cerrar y reintentar</button>
+
+            <button id="btn-reintentar-footer" class="hidden mt-4 bg-[#24496E] text-[#F3EFDC] w-full py-3 rounded-xl font-bold uppercase tracking-wider">Cerrar y reintentar</button>
         </div>
     </div>
 
     <div id="panel-admin" class="admin-panel">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold">Panel de Control</h2>
-            <button onclick="cerrarAdmin()" class="text-red-500 font-bold">CERRAR</button>
+            <h2 class="text-xl font-bold">Panel Admin - Docentes Brown</h2>
+            <button onclick="cerrarAdmin()" class="bg-gray-200 px-4 py-2 rounded-lg font-bold">CERRAR</button>
         </div>
-        <button onclick="resetStorage()" class="w-full bg-red-100 text-red-600 p-4 rounded-xl font-bold mb-4">RESETAR DISPOSITIVO (Volver a tirar)</button>
-        <p class="text-xs text-gray-500 mb-4 italic text-center">Nota: Para editar premios permanentemente, debes modificar el arreglo "PREMIOS" en el código fuente.</p>
+        <button onclick="resetStorage()" class="w-full bg-red-600 text-white p-5 rounded-2xl font-bold mb-4 shadow-lg uppercase">BORRAR HISTORIAL (Volver a tirar)</button>
+        <p class="text-center text-sm text-gray-500 italic">Usá esto para testear o si querés que un cliente vuelva a participar.</p>
     </div>
 
     <script>
-        // GENERACIÓN DINÁMICA DE SEGMENTOS SEGÚN TU PEDIDO
         const TIPOS_PREMIO = [
             { corto: "10% OFF", completo: "10% de descuento", cant: 10 },
             { corto: "15% OFF", completo: "15% de descuento", cant: 5 },
@@ -79,7 +92,7 @@
             { corto: "25% OFF", completo: "25% de descuento", cant: 1 },
             { corto: "40% COMBO*", completo: "40% OFF en Calificador Físico + Digital", cant: 1 },
             { corto: "50% COMBO*", completo: "50% OFF en Calificador Físico + Digital", cant: 1 },
-            { corto: "OTRA VEZ", completo: "TIRAR DE NUEVO", cant: 5, reintentar: true }
+            { corto: "OTRA VEZ", completo: "¡TIRAR DE NUEVO!", cant: 5, reintentar: true }
         ];
 
         const PREMIOS = [];
@@ -115,7 +128,7 @@
         }
 
         function girar() {
-            if (girando || localStorage.getItem('dbrown_promo_2024')) return;
+            if (girando || localStorage.getItem('dbrown_promo_2026')) return;
             girando = true;
             btnGirar.disabled = true;
             btnGirar.style.opacity = "0.5";
@@ -128,32 +141,52 @@
             setTimeout(() => {
                 const premio = PREMIOS[index];
                 if (!premio.reintentar) {
-                    localStorage.setItem('dbrown_promo_2024', premio.completo);
+                    localStorage.setItem('dbrown_promo_2026', premio.completo);
                 }
                 mostrarPremio(premio);
             }, 4000);
         }
 
         function mostrarPremio(p) {
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.7 }, colors: ['#24496E', '#F3EFDC'] });
+            if (!p.reintentar) confetti({ particleCount: 150, spread: 70, origin: { y: 0.7 }, colors: ['#24496E', '#F3EFDC'] });
             document.getElementById('premio-texto').innerText = p.completo;
             
             if (p.reintentar) {
-                document.getElementById('modal-titulo').innerText = "¡UPS!";
+                document.getElementById('modal-titulo').innerText = "¡CASI!";
                 document.getElementById('instrucciones-ganador').classList.add('hidden');
-                document.getElementById('btn-cerrar-modal').classList.remove('hidden');
+                document.getElementById('btn-reintentar-footer').classList.remove('hidden');
                 girando = false;
             } else {
                 document.getElementById('modal-titulo').innerText = "¡GANASTE!";
                 document.getElementById('instrucciones-ganador').classList.remove('hidden');
-                document.getElementById('btn-cerrar-modal').classList.add('hidden');
+                document.getElementById('btn-reintentar-footer').classList.add('hidden');
                 const link = `https://wa.me/5491153196358?text=${encodeURIComponent('¡Hola Docentes Brown! Gané '+p.completo+' en la ruleta.')}`;
                 document.getElementById('btn-whatsapp').href = link;
             }
             modal.style.display = 'flex';
         }
 
-        // Lógica de Admin (Triple Clic en Título)
+        // Lógica para cerrar modal
+        function cerrarModal() {
+            modal.style.display = 'none';
+            // Si el usuario sacó "Tirar de nuevo", le permitimos girar otra vez
+            if (document.getElementById('premio-texto').innerText === "¡TIRAR DE NUEVO!") {
+                btnGirar.disabled = false;
+                btnGirar.style.opacity = "1";
+                canvas.style.transition = "none";
+                canvas.style.transform = "rotate(0deg)";
+                setTimeout(() => canvas.style.transition = "transform 4s cubic-bezier(0.15, 0, 0.15, 1)", 50);
+            } else {
+                // Si ya ganó, mostramos el mensaje de error abajo
+                document.getElementById('msg-error').classList.remove('hidden');
+                btnGirar.innerText = "YA PARTICIPASTE";
+            }
+        }
+
+        document.getElementById('x-cerrar').onclick = cerrarModal;
+        document.getElementById('btn-reintentar-footer').onclick = cerrarModal;
+
+        // Admin: Triple Clic
         let clics = 0;
         tituloApp.addEventListener('click', () => {
             clics++;
@@ -162,25 +195,17 @@
         });
 
         function cerrarAdmin() { document.getElementById('panel-admin').style.display = 'none'; }
-        function resetStorage() { localStorage.removeItem('dbrown_promo_2024'); location.reload(); }
-        
-        document.getElementById('btn-cerrar-modal').onclick = () => {
-            modal.style.display = 'none';
-            btnGirar.disabled = false;
-            btnGirar.style.opacity = "1";
-            canvas.style.transition = "none";
-            canvas.style.transform = "rotate(0deg)";
-            setTimeout(() => canvas.style.transition = "transform 4s cubic-bezier(0.15, 0, 0.15, 1)", 50);
-        };
+        function resetStorage() { localStorage.removeItem('dbrown_promo_2026'); location.reload(); }
 
         window.onload = () => {
             dibujar();
-            const yaGano = localStorage.getItem('dbrown_promo_2024');
+            const yaGano = localStorage.getItem('dbrown_promo_2026');
             if (yaGano) {
                 btnGirar.innerText = "YA PARTICIPASTE";
                 btnGirar.disabled = true;
+                btnGirar.style.opacity = "0.5";
                 document.getElementById('msg-error').classList.remove('hidden');
-                mostrarPremio({ completo: yaGano, reintentar: false });
+                setTimeout(() => mostrarPremio({ completo: yaGano, reintentar: false }), 800);
             }
         };
 
