@@ -3,64 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruleta de Premios - Calificadores Docentes</title>
+    <title>Ruleta Promocional - Calificadores</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&family=IBM+Plex+Sans+Hebrew:wght@400;600&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Quicksand', sans-serif; background-color: #f3f4f6; }
-        .ruleta-container { position: relative; width: 320px; height: 320px; margin: 0 auto; }
-        #canvas-ruleta { width: 100%; height: 100%; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); }
+        :root {
+            --color-crema: #F3EFDC;
+            --color-azul: #24496E;
+        }
+        body { 
+            font-family: 'IBM Plex Sans Hebrew', sans-serif; 
+            background-color: var(--color-crema);
+            color: var(--color-azul);
+        }
+        h1, h2, #btn-girar { 
+            font-family: 'League Spartan', sans-serif; 
+            text-transform: uppercase;
+        }
+        .ruleta-container { position: relative; width: 340px; height: 340px; margin: 0 auto; }
+        #canvas-ruleta { 
+            width: 100%; height: 100%; 
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+        }
         .puntero {
             position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
             width: 0; height: 0; border-left: 15px solid transparent;
-            border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10;
+            border-right: 15px solid transparent; border-top: 30px solid var(--color-azul); z-index: 10;
         }
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(36, 73, 110, 0.9); z-index: 50; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4 text-gray-800">
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
 
-    <header class="text-center mb-8">
-        <h1 class="text-3xl font-bold text-indigo-600 mb-2">¡Girás y Ganás!</h1>
-        <p class="text-gray-600">Probá tu suerte y llevate una promo para tu próximo calificador.</p>
+    <header class="text-center mb-6">
+        <h1 class="text-4xl font-bold mb-2">Girás la ruleta y ganás tu promo</h1>
+        <p class="text-lg opacity-90">¡No te quedes sin tu beneficio!</p>
     </header>
 
-    <main class="bg-white p-6 rounded-3xl shadow-xl w-full max-w-sm text-center">
+    <main class="bg-white/50 backdrop-blur-sm p-8 rounded-[2rem] shadow-2xl w-full max-w-sm text-center border border-white/20">
         <div class="ruleta-container mb-6">
             <div class="puntero"></div>
-            <canvas id="canvas-ruleta" width="400" height="400"></canvas>
+            <canvas id="canvas-ruleta" width="500" height="500"></canvas>
         </div>
 
-        <button id="btn-girar" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-8 rounded-full text-xl shadow-lg transform transition active:scale-95 w-full">
-            ¡GIRAR AHORA!
+        <button id="btn-girar" class="bg-[#24496E] hover:bg-[#1a3550] text-[#F3EFDC] font-bold py-4 px-8 rounded-xl text-2xl shadow-lg transform transition active:scale-95 w-full tracking-wider">
+            ¡GIRAR!
         </button>
-        <p id="msg-error" class="text-red-500 mt-4 hidden text-sm font-semibold">Ya usaste tu oportunidad por hoy. ¡Mirá tu premio abajo!</p>
+
+        <div class="mt-6 text-left text-[11px] space-y-1 opacity-80 border-t border-[#24496E]/20 pt-4">
+            <p><strong>* Combo Especial:</strong> 50% OFF comprando Calificador Físico + Digital.</p>
+            <p><strong>* Combo Docente:</strong> 10% OFF en Calificador con Calendario y Planner.</p>
+            <p><strong>* Digital Gratis:</strong> Con la compra de cualquier calificador físico.</p>
+        </div>
+
+        <p id="msg-error" class="text-red-600 mt-4 hidden text-sm font-bold uppercase">Ya participaste con este dispositivo.</p>
     </main>
 
     <div id="modal-ganador" class="modal-overlay">
-        <div class="bg-white rounded-2xl p-8 max-w-xs w-full text-center shadow-2xl">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">¡FELICITACIONES! 🥳</h2>
-            <p class="text-lg mb-2 text-gray-600">Ganaste:</p>
-            <div id="premio-texto" class="text-xl font-extrabold text-indigo-600 bg-indigo-50 p-4 rounded-xl mb-6 leading-tight"></div>
-            <p class="text-sm text-gray-500 mb-6 italic">Mandanos una captura de pantalla por Instagram o WhatsApp para recibir tu cupón.</p>
+        <div class="bg-[#F3EFDC] rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl border-4 border-[#24496E]">
+            <h2 class="text-3xl font-bold text-[#24496E] mb-2 italic">¡GANASTE!</h2>
+            <div id="premio-texto" class="text-xl font-bold text-[#F3EFDC] bg-[#24496E] p-4 rounded-xl mb-6 shadow-inner"></div>
+            
+            <p class="text-sm text-[#24496E] mb-6 font-semibold">Mandanos una captura de pantalla por Instagram o por WhatsApp y te enviamos la tienda y el cupón para que hagas tu compra.</p>
             
             <div class="space-y-3">
-                <a id="btn-whatsapp" href="#" target="_blank" class="block bg-green-500 text-white py-3 rounded-lg font-bold hover:bg-green-600 transition">Enviar por WhatsApp</a>
-                <a id="btn-instagram" href="https://instagram.com/docentesbrown" target="_blank" class="block bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-lg font-bold hover:opacity-90 transition">Enviar por Instagram</a>
+                <a id="btn-whatsapp" href="#" target="_blank" class="block bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition shadow-md">Enviar por WhatsApp</a>
+                <a id="btn-instagram" href="https://instagram.com/docentesbrown" target="_blank" class="block bg-[#24496E] text-[#F3EFDC] py-3 rounded-xl font-bold hover:opacity-90 transition shadow-md">Enviar por Instagram</a>
             </div>
         </div>
     </div>
 
     <script>
-        // CONFIGURACIÓN DE PREMIOS Y PROBABILIDADES
+        // CONFIGURACIÓN DE PREMIOS (Abreviados para la ruleta)
         const PREMIOS = [
-            { texto: "5% de descuento", color: "#C7D2FE", peso: 35 },
-            { texto: "10% de descuento", color: "#A5B4FC", peso: 25 },
-            { texto: "Calificador Digital GRATIS", color: "#818CF8", peso: 20 },
-            { texto: "10% OFF Combo Planner", color: "#6366F1", peso: 12 },
-            { texto: "25% de descuento", color: "#4F46E5", peso: 5 },
-            { texto: "50% OFF Combo Especial", color: "#3730A3", peso: 3 }
+            { corto: "5% OFF", completo: "5% de descuento", color: "#F3EFDC", textoColor: "#24496E", peso: 35 },
+            { corto: "10% OFF", completo: "10% de descuento", color: "#24496E", textoColor: "#F3EFDC", peso: 25 },
+            { corto: "DIGITAL GRATIS*", completo: "Calificador Digital Gratis (con compra de físico)", color: "#F3EFDC", textoColor: "#24496E", peso: 20 },
+            { corto: "10% COMBO*", completo: "10% de descuento comprando el calificador con calendario y planner", color: "#24496E", textoColor: "#F3EFDC", peso: 12 },
+            { corto: "25% OFF", completo: "25% de descuento", color: "#F3EFDC", textoColor: "#24496E", peso: 5 },
+            { corto: "50% COMBO*", completo: "50% de descuento comprando el calificador físico + el calificador digital", color: "#24496E", textoColor: "#F3EFDC", peso: 3 }
         ];
 
         const canvas = document.getElementById('canvas-ruleta');
@@ -71,7 +95,6 @@
         
         let girando = false;
 
-        // Dibujar la ruleta
         function dibujarRuleta() {
             const radio = canvas.width / 2;
             const anguloSegmento = (2 * Math.PI) / PREMIOS.length;
@@ -82,20 +105,23 @@
                 ctx.moveTo(radio, radio);
                 ctx.arc(radio, radio, radio, i * anguloSegmento, (i + 1) * anguloSegmento);
                 ctx.fill();
-                ctx.save();
                 
-                // Texto de los segmentos
+                // Bordes de los segmentos
+                ctx.strokeStyle = "#24496E";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.save();
                 ctx.translate(radio, radio);
                 ctx.rotate(i * anguloSegmento + anguloSegmento / 2);
                 ctx.textAlign = "right";
-                ctx.fillStyle = "#fff";
-                ctx.font = "bold 14px Montserrat";
-                ctx.fillText(premio.texto.substring(0, 15), radio - 10, 5);
+                ctx.fillStyle = premio.textoColor;
+                ctx.font = "bold 20px 'League Spartan'";
+                ctx.fillText(premio.corto, radio - 20, 10);
                 ctx.restore();
             });
         }
 
-        // Lógica de sorteo por peso
         function obtenerPremioAleatorio() {
             const totalPeso = PREMIOS.reduce((acc, p) => acc + p.peso, 0);
             let random = Math.random() * totalPeso;
@@ -106,7 +132,7 @@
         }
 
         function girar() {
-            if (girando || localStorage.getItem('ruleta_docente_ganada')) return;
+            if (girando || localStorage.getItem('promo_calificadores_2024')) return;
             
             girando = true;
             btnGirar.disabled = true;
@@ -114,7 +140,7 @@
 
             const indicePremio = obtenerPremioAleatorio();
             const gradosPorSegmento = 360 / PREMIOS.length;
-            const vueltasBase = 5; // Cantidad de giros completos
+            const vueltasBase = 8; 
             const ajusteFinal = 360 - (indicePremio * gradosPorSegmento) - (gradosPorSegmento / 2);
             const rotacionTotal = (vueltasBase * 360) + ajusteFinal;
 
@@ -122,31 +148,34 @@
 
             setTimeout(() => {
                 const premio = PREMIOS[indicePremio];
-                mostrarResultado(premio.texto);
-                localStorage.setItem('ruleta_docente_ganada', premio.texto);
+                mostrarResultado(premio.completo);
+                localStorage.setItem('promo_calificadores_2024', premio.completo);
             }, 4100);
         }
 
         function mostrarResultado(texto) {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            confetti({ 
+                particleCount: 100, 
+                spread: 70, 
+                origin: { y: 0.6 },
+                colors: ['#24496E', '#F3EFDC', '#ffffff']
+            });
             premioTexto.innerText = texto;
             
-            // Configurar Link WhatsApp
             const msjWs = encodeURIComponent(`¡Hola! Gané esta promo en la ruleta: ${texto}. Les envío la captura.`);
-            document.getElementById('btn-whatsapp').href = `https://wa.me/5491153196358?text=${msjWs}`; // CAMBIAR TU NUMERO ACA
+            document.getElementById('btn-whatsapp').href = `https://wa.me/5491153196358?text=${msjWs}`; // <-- REEMPLAZAR CON TU NÚMERO
             
             modal.style.display = 'flex';
         }
 
-        // Bloqueo si ya participó
         window.onload = () => {
             dibujarRuleta();
-            const premioGuardado = localStorage.getItem('ruleta_docente_ganada');
+            const premioGuardado = localStorage.getItem('promo_calificadores_2024');
             if (premioGuardado) {
+                btnGirar.innerText = "YA PARTICIPASTE";
                 btnGirar.disabled = true;
-                btnGirar.classList.add('hidden');
                 document.getElementById('msg-error').classList.remove('hidden');
-                setTimeout(() => mostrarResultado(premioGuardado), 500);
+                setTimeout(() => mostrarResultado(premioGuardado), 800);
             }
         };
 
