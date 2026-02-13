@@ -13,19 +13,11 @@
         body { font-family: 'IBM Plex Sans Hebrew', sans-serif; background-color: var(--color-crema); color: var(--color-azul); overflow-x: hidden; touch-action: manipulation; }
         h1, h2, h3, #btn-girar { font-family: 'League Spartan', sans-serif; text-transform: uppercase; }
         .ruleta-wrapper { position: relative; width: 90vw; max-width: 360px; aspect-ratio: 1 / 1; margin: 0 auto; }
-        #canvas-ruleta { width: 100% !important; height: 100% !important; transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); border-radius: 50%; }
+        #canvas-ruleta { width: 100% !important; height: 100% !important; transition: transform 4s cubic-bezier(0.1, 0, 0.2, 1); border-radius: 50%; }
         .puntero { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid var(--color-azul); z-index: 20; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(36, 73, 110, 0.95); z-index: 100; align-items: center; justify-content: center; padding: 15px; backdrop-filter: blur(5px); }
+        .btn-close-modal { position: absolute; top: 20px; right: 20px; width: 35px; height: 35px; background: var(--color-azul); color: var(--color-crema); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; cursor: pointer; border: 2px solid var(--color-crema); }
         .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 200; padding: 20px; overflow-y: auto; }
-        
-        /* Estilo para la X de cierre */
-        .btn-close-modal {
-            position: absolute; top: 20px; right: 20px;
-            width: 35px; height: 35px;
-            background: var(--color-azul); color: var(--color-crema);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 20px; font-weight: bold; cursor: pointer; border: 2px solid var(--color-crema);
-        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-start min-h-screen pt-10 pb-6 px-4">
@@ -46,10 +38,10 @@
         </button>
 
         <div class="mt-8 space-y-2 px-2">
-            <h3 class="text-xs font-bold border-b border-[#24496E]/20 pb-1">Aclaraciones:</h3>
+            <h3 class="text-xs font-bold border-b border-[#24496E]/20 pb-1 uppercase">Aclaraciones:</h3>
             <div class="text-[10px] leading-relaxed opacity-70">
-                <p><strong>* Combos:</strong> Descuentos válidos en la compra de Calificador Físico + Digital.</p>
-                <p><strong>* Tirar de nuevo:</strong> No cuenta como premio, ¡podés volver a intentar!</p>
+                <p><strong>* Combos:</strong> Válidos para Calificador Físico + Digital.</p>
+                <p><strong>* Otra vez:</strong> Si sale este premio, podés volver a tirar.</p>
             </div>
         </div>
         <p id="msg-error" class="text-red-600 mt-4 hidden text-center text-xs font-bold uppercase tracking-widest">Ya usaste tu oportunidad.</p>
@@ -57,72 +49,68 @@
 
     <div id="modal-ganador" class="modal-overlay">
         <div class="relative bg-[#F3EFDC] rounded-[2.5rem] p-8 w-full max-w-[320px] text-center shadow-2xl border-[6px] border-[#24496E]">
-            
             <div id="x-cerrar" class="btn-close-modal">×</div>
-
             <h2 id="modal-titulo" class="text-4xl font-bold text-[#24496E] mb-2">¡GENIAL!</h2>
             <div id="premio-texto" class="text-xl font-bold text-[#F3EFDC] bg-[#24496E] p-5 rounded-2xl mb-6 min-h-[80px] flex items-center justify-center"></div>
-            
             <div id="instrucciones-ganador">
-                <p class="text-[11px] leading-tight text-[#24496E] mb-6 font-semibold uppercase">Capturá esta pantalla y enviala por Instagram o WhatsApp.</p>
+                <p class="text-[11px] leading-tight text-[#24496E] mb-6 font-semibold uppercase">Capturá la pantalla y enviala para validar.</p>
                 <div class="space-y-3">
                     <a id="btn-whatsapp" href="#" class="flex items-center justify-center bg-[#25D366] text-white py-4 rounded-xl font-bold text-sm shadow-md">WhatsApp</a>
                     <a href="https://instagram.com/docentesbrown" class="flex items-center justify-center bg-[#24496E] text-[#F3EFDC] py-4 rounded-xl font-bold text-sm shadow-md">Instagram</a>
                 </div>
             </div>
-
-            <button id="btn-reintentar-footer" class="hidden mt-4 bg-[#24496E] text-[#F3EFDC] w-full py-3 rounded-xl font-bold uppercase tracking-wider">Cerrar y reintentar</button>
+            <button id="btn-reintentar-footer" class="hidden mt-4 bg-[#24496E] text-[#F3EFDC] w-full py-3 rounded-xl font-bold uppercase tracking-wider">Tirar de nuevo</button>
         </div>
     </div>
 
     <div id="panel-admin" class="admin-panel">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold">Panel Admin - Docentes Brown</h2>
+            <h2 class="text-xl font-bold italic">Panel Admin</h2>
             <button onclick="cerrarAdmin()" class="bg-gray-200 px-4 py-2 rounded-lg font-bold">CERRAR</button>
         </div>
-        <button onclick="resetStorage()" class="w-full bg-red-600 text-white p-5 rounded-2xl font-bold mb-4 shadow-lg uppercase">BORRAR HISTORIAL (Volver a tirar)</button>
-        <p class="text-center text-sm text-gray-500 italic">Usá esto para testear o si querés que un cliente vuelva a participar.</p>
+        <button onclick="resetStorage()" class="w-full bg-red-600 text-white p-5 rounded-2xl font-bold shadow-lg uppercase">Resetear Dispositivo</button>
     </div>
 
     <script>
-        const TIPOS_PREMIO = [
-            { corto: "10% OFF", completo: "10% de descuento", cant: 10 },
-            { corto: "15% OFF", completo: "15% de descuento", cant: 5 },
+        // Configuración de cantidades solicitada
+        const CONFIG = [
+            { corto: "10% OFF", completo: "10% de descuento", cant: 8 }, // -2 de 10%
+            { corto: "15% OFF", completo: "15% de descuento", cant: 4 }, // -1 de 15%
             { corto: "20% OFF", completo: "20% de descuento", cant: 2 },
             { corto: "25% OFF", completo: "25% de descuento", cant: 1 },
-            { corto: "40% COMBO*", completo: "40% OFF en Calificador Físico + Digital", cant: 1 },
-            { corto: "50% COMBO*", completo: "50% OFF en Calificador Físico + Digital", cant: 1 },
+            { corto: "40% COMBO*", completo: "40% OFF en Físico + Digital", cant: 1 },
+            { corto: "50% COMBO*", completo: "50% OFF en Físico + Digital", cant: 1 },
             { corto: "OTRA VEZ", completo: "¡TIRAR DE NUEVO!", cant: 5, reintentar: true }
         ];
 
-        const PREMIOS = [];
-        TIPOS_PREMIO.forEach(tipo => {
-            for(let i=0; i<tipo.cant; i++) {
-                PREMIOS.push({ ...tipo, color: PREMIOS.length % 2 === 0 ? "#F3EFDC" : "#24496E", txt: PREMIOS.length % 2 === 0 ? "#24496E" : "#F3EFDC" });
-            }
+        let PREMIOS = [];
+        CONFIG.forEach(tipo => {
+            for(let i=0; i<tipo.cant; i++) PREMIOS.push({...tipo});
         });
+
+        // Mezclamos los premios para que no queden juntos
+        PREMIOS = PREMIOS.sort(() => Math.random() - 0.5);
 
         const canvas = document.getElementById('canvas-ruleta');
         const ctx = canvas.getContext('2d');
         const btnGirar = document.getElementById('btn-girar');
         const modal = document.getElementById('modal-ganador');
-        const tituloApp = document.getElementById('titulo-app');
         let girando = false;
+        let anguloActual = 0;
 
         function dibujar() {
             const r = canvas.width / 2;
             const arc = (2 * Math.PI) / PREMIOS.length;
             PREMIOS.forEach((p, i) => {
                 const angulo = i * arc;
-                ctx.fillStyle = p.color;
+                ctx.fillStyle = i % 2 === 0 ? "#F3EFDC" : "#24496E";
                 ctx.beginPath(); ctx.moveTo(r, r);
                 ctx.arc(r, r, r, angulo, angulo + arc);
                 ctx.fill();
-                ctx.strokeStyle = "#24496E"; ctx.lineWidth = 1; ctx.stroke();
                 ctx.save();
                 ctx.translate(r, r); ctx.rotate(angulo + arc / 2);
-                ctx.textAlign = "right"; ctx.fillStyle = p.txt;
-                ctx.font = "bold 16px 'League Spartan'";
+                ctx.textAlign = "right"; ctx.fillStyle = i % 2 === 0 ? "#24496E" : "#F3EFDC";
+                ctx.font = "bold 18px 'League Spartan'";
                 ctx.fillText(p.corto, r - 40, 6); ctx.restore();
             });
         }
@@ -134,17 +122,22 @@
             btnGirar.style.opacity = "0.5";
 
             const index = Math.floor(Math.random() * PREMIOS.length);
-            const vueltas = 360 * 8;
-            const gradoFinal = 360 - (index * (360/PREMIOS.length)) - (360/PREMIOS.length/2);
-            canvas.style.transform = `rotate(${vueltas + gradoFinal}deg)`;
+            const numSegmentos = PREMIOS.length;
+            const gradosPorSegmento = 360 / numSegmentos;
+            
+            // Calculamos la rotación para que el centro del segmento index quede bajo el puntero (top)
+            // En Canvas, 0 grados es a la derecha, sumamos 270 para que el "inicio" sea arriba
+            const vueltas = 360 * 10;
+            const rotacionFinal = vueltas + (360 - (index * gradosPorSegmento) - (gradosPorSegmento / 2));
+            
+            canvas.style.transform = `rotate(${rotacionFinal}deg)`;
 
+            // Esperamos el tiempo de la animación + 1 segundo de suspenso
             setTimeout(() => {
                 const premio = PREMIOS[index];
-                if (!premio.reintentar) {
-                    localStorage.setItem('dbrown_promo_2026', premio.completo);
-                }
+                if (!premio.reintentar) localStorage.setItem('dbrown_promo_2026', premio.completo);
                 mostrarPremio(premio);
-            }, 4000);
+            }, 5000); // 4s de giro + 1s extra
         }
 
         function mostrarPremio(p) {
@@ -166,18 +159,13 @@
             modal.style.display = 'flex';
         }
 
-        // Lógica para cerrar modal
         function cerrarModal() {
             modal.style.display = 'none';
-            // Si el usuario sacó "Tirar de nuevo", le permitimos girar otra vez
             if (document.getElementById('premio-texto').innerText === "¡TIRAR DE NUEVO!") {
-                btnGirar.disabled = false;
-                btnGirar.style.opacity = "1";
-                canvas.style.transition = "none";
-                canvas.style.transform = "rotate(0deg)";
-                setTimeout(() => canvas.style.transition = "transform 4s cubic-bezier(0.15, 0, 0.15, 1)", 50);
+                btnGirar.disabled = false; btnGirar.style.opacity = "1";
+                canvas.style.transition = "none"; canvas.style.transform = "rotate(0deg)";
+                setTimeout(() => canvas.style.transition = "transform 4s cubic-bezier(0.1, 0, 0.2, 1)", 50);
             } else {
-                // Si ya ganó, mostramos el mensaje de error abajo
                 document.getElementById('msg-error').classList.remove('hidden');
                 btnGirar.innerText = "YA PARTICIPASTE";
             }
@@ -188,12 +176,11 @@
 
         // Admin: Triple Clic
         let clics = 0;
-        tituloApp.addEventListener('click', () => {
+        document.getElementById('titulo-app').onclick = () => {
             clics++;
             if (clics === 3) { document.getElementById('panel-admin').style.display = 'block'; clics = 0; }
             setTimeout(() => clics = 0, 1000);
-        });
-
+        };
         function cerrarAdmin() { document.getElementById('panel-admin').style.display = 'none'; }
         function resetStorage() { localStorage.removeItem('dbrown_promo_2026'); location.reload(); }
 
@@ -202,8 +189,7 @@
             const yaGano = localStorage.getItem('dbrown_promo_2026');
             if (yaGano) {
                 btnGirar.innerText = "YA PARTICIPASTE";
-                btnGirar.disabled = true;
-                btnGirar.style.opacity = "0.5";
+                btnGirar.disabled = true; btnGirar.style.opacity = "0.5";
                 document.getElementById('msg-error').classList.remove('hidden');
                 setTimeout(() => mostrarPremio({ completo: yaGano, reintentar: false }), 800);
             }
